@@ -4,25 +4,48 @@
 \name{ClusVis-package}
 \alias{ClusVis-package}
 \alias{ClusVis}
-\title{Model-based visualization of model-based clustering.}
+\title{Gaussian-Based Visualization of Gaussian and Non-Gaussian Model-Based Clustering.}
 \description{
 The main function for parameter inference is \link{clusvis}.
-However, specific functions for parameter inference  \link{clusvisMixmod} are implemented to deal with model-based clustering done with R packages Rmixmod and Rmixcomp respectively.
+Moreover, specific functions  \link{clusvisVarSelLCM} and \link{clusvisMixmod} are implemented to visualize the results of the R package VarSelLCM and Rmixmod.
 After parameter inference, visualization is done with function \link{plotDensityClusVisu}.
 }
 \details{
 \tabular{ll}{
   Package: \tab ClusVis\cr
   Type: \tab Package\cr
-  Version: \tab 1.0.0\cr
-  Date: \tab 2017-07-10\cr
-  License: \tab GPL-2\cr
+  Version: \tab 1.1.0\cr
+  Date: \tab 2018-04-18\cr
+  License: \tab GPL-3\cr
   LazyLoad: \tab yes\cr
 }
 }
 \examples{
 \dontrun{
-### Categorical data clustering
+
+ ## First example: R package VarSelLCM
+ # Package loading
+ require(VarSelLCM)
+
+ # Data loading (categorical data)
+ data("congress")
+ # Model-based clustering with 3 components
+ res <- VarSelCluster(congress, 3)
+
+ # Inference of the parameters used for results visualization
+ # (specific for Rmixmod results)
+ # It is better because probabilities of classification are generated
+ # by using the model parameters
+ resvisu <- clusvisVarSelLCM(res)
+
+ # Component interpretation graph
+ plotDensityClusVisu(resvisu)
+
+ # Scatter-plot of the observation memberships
+ plotDensityClusVisu(resvisu,  add.obs = TRUE)
+
+
+## Second example: R package Rmixmod
 # Package loading
 require(Rmixmod)
  

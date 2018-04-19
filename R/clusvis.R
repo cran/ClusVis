@@ -1,20 +1,20 @@
 
-##' Model-based visualization of model-based clustering.
+##' Gaussian-Based Visualization of Gaussian and Non-Gaussian Model-Based Clustering.
 ##'
 ##'  
 ##'
 ##' \tabular{ll}{
 ##'   Package: \tab ClusVis\cr
 ##'   Type: \tab Package\cr
-##'   Version: \tab 1.0.0\cr
-##'   Date: \tab 2017-07-10\cr
-##'   License: \tab GPL-2\cr
+##'   Version: \tab 1.1.0\cr
+##'   Date: \tab 2018-04-18\cr
+##'   License: \tab GPL-3\cr
 ##'   LazyLoad: \tab yes\cr
 ##' }
 ##'
 ##' @description 
 ##' The main function for parameter inference is \link{clusvis}.
-##' However, specific functions for parameter inference  \link{clusvisMixmod} are implemented to deal with model-based clustering done with R packages Rmixmod and Rmixcomp respectively.
+##' Moreover, specific functions  \link{clusvisVarSelLCM} and \link{clusvisMixmod} are implemented to visualize the results of the R package VarSelLCM and Rmixmod.
 ##' After parameter inference, visualization is done with function \link{plotDensityClusVisu}.
 ##'
 ##'
@@ -31,11 +31,35 @@
 ##' @import mgcv
 ##' @import mvtnorm
 ##' @import Rmixmod
+##' @import VarSelLCM
 ##' @importFrom graphics contour image legend points text 
-##' @importFrom stats dist dnorm optim optimize rnorm runif
+##' @importFrom stats dist dnorm optim optimize rnorm runif dpois rpois
 ##' @examples
 ##' \dontrun{
-##' ### Categorical data clustering
+##' 
+##'  ## First example: R package VarSelLCM
+##'  # Package loading
+##'  require(VarSelLCM)
+##'
+##'  # Data loading (categorical data)
+##'  data("congress")
+##'  # Model-based clustering with 3 components
+##'  res <- VarSelCluster(congress, 3)
+##'
+##'  # Inference of the parameters used for results visualization
+##'  # (specific for Rmixmod results)
+##'  # It is better because probabilities of classification are generated
+##'  # by using the model parameters
+##'  resvisu <- clusvisVarSelLCM(res)
+##'
+##'  # Component interpretation graph
+##'  plotDensityClusVisu(resvisu)
+##'
+##'  # Scatter-plot of the observation memberships
+##'  plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##'
+##'
+##' ## Second example: R package Rmixmod
 ##' # Package loading
 ##' require(Rmixmod)
 ##'  
@@ -65,6 +89,22 @@
 ##' }
 NULL
 
+##' Real categorical data set: Congressional Voting Records Data Set
+##' 
+##' This data set includes votes for each of the U.S. House of Representatives Congressmen on the 16 key votes identified by the CQA. The CQA lists nine different types of votes: voted for, paired for, and announced for (these three simplified to yea), voted against, paired against, and announced against (these three simplified to nay), voted present, voted present to avoid conflict of interest, and did not vote or otherwise make a position known (these three simplified to an unknown disposition).
+##'
+##'
+##' 
+##' @references Congressional Quarterly Almanac, 98th Congress, 2nd session 1984, Volume XL: Congressional Quarterly Inc. Washington, D.C., 1985. 
+##' @references Schlimmer, J. C. (1987). Concept acquisition through representational adjustment. Doctoral dissertation, Department of Information and Computer Science, University of California, Irvine, CA. 
+##' @references Website: https://archive.ics.uci.edu/ml/datasets/congressional+voting+records
+##' @name congress
+##' @docType data
+##' @keywords datasets
+##' 
+##' @examples
+##'   data(congress)
+NULL
 
 ###################################################################################
 ##' This function estimates the parameters used for visualization
@@ -82,6 +122,28 @@ NULL
 ##'  
 ##' @examples
 ##' \dontrun{
+##'  ####### First example with VarSelLCM
+##'  # Package loading
+##'  require(VarSelLCM)
+##'
+##'  # Data loading (categorical data)
+##'  data("congress")
+##'  # Model-based clustering with 3 components
+##'  res <- VarSelCluster(congress, 3)
+##'
+##'  # Inference of the parameters used for results visualization
+##'  # (specific for Rmixmod results)
+##'  # It is better because probabilities of classification are generated
+##'  # by using the model parameters
+##'  resvisu <- clusvisVarSelLCM(res)
+##'
+##'  # Component interpretation graph
+##'  plotDensityClusVisu(resvisu)
+##'
+##'  # Scatter-plot of the observation memberships
+##'  plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##'
+##'  ####### Second example with Rmixmod
 ##' ### Package loading
 ##' require(Rmixmod)
 ##'  
