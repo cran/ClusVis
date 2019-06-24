@@ -98,17 +98,50 @@ rlogtikmixmod <- function(resmixmod){
 ##' @return Returns a list
 ##' @examples
 ##' \dontrun{
+##' 
+##'  ## First example: R package Rmixmod
+##'  # Package loading
+##'  require(Rmixmod)
+##'
+##'  # Data loading (categorical data)
+##'  data("congress")
+##'  # Model-based clustering with 4 components
+##'  set.seed(123)
+##'  res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
+##'
+##'  # Inference of the parameters used for results visualization
+##'  # (specific for Rmixmod results)
+##'  # It is better because probabilities of classification are generated
+##'  # by using the model parameters
+##'  resvisu <- clusvisMixmod(res)
+##'
+##'  # Component interpretation graph
+##'  plotDensityClusVisu(resvisu)
+##'
+##'  # Scatter-plot of the observation memberships
+##'  plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##'
+##'
+##' ## Second example: R package Rmixmod
 ##' # Package loading
 ##' require(Rmixmod)
-##' 
+##'  
 ##' # Data loading (categorical data)
 ##' data(birds)
 ##'
 ##' # Model-based clustering with 3 components
 ##' resmixmod <- mixmodCluster(birds, 3)
 ##'
+##' # Inference of the parameters used for results visualization (general approach)
+##' # Probabilities of classification are not sampled from the model parameter,
+##' # but observed probabilities of classification are used for parameter estimation
+##' resvisu <- clusvis(log(resmixmod@bestResult@proba),
+##'                    resmixmod@bestResult@parameters@proportions)
+##'
 ##' # Inference of the parameters used for results visualization
 ##' # (specific for Rmixmod results)
+##' # It is better because probabilities of classification are generated
+##' # by using the model parameters
 ##' resvisu <- clusvisMixmod(resmixmod)
 ##'
 ##' # Component interpretation graph

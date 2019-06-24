@@ -71,12 +71,12 @@ rlogtikvarsellcm <- function(varselResult)
 ##'  require(VarSelLCM)
 ##'
 ##'  # Data loading (categorical data)
-##'  data("congress")
+##'  data("heart")
 ##'  # Model-based clustering with 3 components
-##'  res <- VarSelCluster(congress, 3)
+##'  res <- VarSelCluster(heart[,-13], 3)
 ##'
 ##'  # Inference of the parameters used for results visualization
-##'  # (specific for Rmixmod results)
+##'  # (specific for VarSelLCM results)
 ##'  # It is better because probabilities of classification are generated
 ##'  # by using the model parameters
 ##'  resvisu <- clusvisVarSelLCM(res)

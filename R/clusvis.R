@@ -6,8 +6,8 @@
 ##' \tabular{ll}{
 ##'   Package: \tab ClusVis\cr
 ##'   Type: \tab Package\cr
-##'   Version: \tab 1.1.0\cr
-##'   Date: \tab 2018-04-18\cr
+##'   Version: \tab 1.2.0\cr
+##'   Date: \tab 2019-06-24\cr
 ##'   License: \tab GPL-3\cr
 ##'   LazyLoad: \tab yes\cr
 ##' }
@@ -37,20 +37,21 @@
 ##' @examples
 ##' \dontrun{
 ##' 
-##'  ## First example: R package VarSelLCM
+##'  ## First example: R package Rmixmod
 ##'  # Package loading
-##'  require(VarSelLCM)
+##'  require(Rmixmod)
 ##'
 ##'  # Data loading (categorical data)
 ##'  data("congress")
-##'  # Model-based clustering with 3 components
-##'  res <- VarSelCluster(congress, 3)
+##'  # Model-based clustering with 4 components
+##'  set.seed(123)
+##'  res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
 ##'
 ##'  # Inference of the parameters used for results visualization
 ##'  # (specific for Rmixmod results)
 ##'  # It is better because probabilities of classification are generated
 ##'  # by using the model parameters
-##'  resvisu <- clusvisVarSelLCM(res)
+##'  resvisu <- clusvisMixmod(res)
 ##'
 ##'  # Component interpretation graph
 ##'  plotDensityClusVisu(resvisu)
@@ -80,6 +81,27 @@
 ##' # It is better because probabilities of classification are generated
 ##' # by using the model parameters
 ##' resvisu <- clusvisMixmod(resmixmod)
+##'
+##' # Component interpretation graph
+##' plotDensityClusVisu(resvisu)
+##'
+##' # Scatter-plot of the observation memberships
+##' plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##' 
+##' ## Third example: R package VarSelLCM
+##' # Package loading
+##' require(VarSelLCM)
+##'
+##' # Data loading (categorical data)
+##' data("heart")
+##' # Model-based clustering with 3 components
+##' res <- VarSelCluster(heart[,-13], 3)
+##'
+##' # Inference of the parameters used for results visualization
+##' # (specific for VarSelLCM results)
+##' # It is better because probabilities of classification are generated
+##' # by using the model parameters
+##' resvisu <- clusvisVarSelLCM(res)
 ##'
 ##' # Component interpretation graph
 ##' plotDensityClusVisu(resvisu)
@@ -122,20 +144,22 @@ NULL
 ##'  
 ##' @examples
 ##' \dontrun{
-##'  ####### First example with VarSelLCM
+##' 
+##'  ## First example: R package Rmixmod
 ##'  # Package loading
-##'  require(VarSelLCM)
+##'  require(Rmixmod)
 ##'
 ##'  # Data loading (categorical data)
 ##'  data("congress")
-##'  # Model-based clustering with 3 components
-##'  res <- VarSelCluster(congress, 3)
+##'  # Model-based clustering with 4 components
+##'  set.seed(123)
+##'  res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
 ##'
 ##'  # Inference of the parameters used for results visualization
 ##'  # (specific for Rmixmod results)
 ##'  # It is better because probabilities of classification are generated
 ##'  # by using the model parameters
-##'  resvisu <- clusvisVarSelLCM(res)
+##'  resvisu <- clusvisMixmod(res)
 ##'
 ##'  # Component interpretation graph
 ##'  plotDensityClusVisu(resvisu)
@@ -143,8 +167,9 @@ NULL
 ##'  # Scatter-plot of the observation memberships
 ##'  plotDensityClusVisu(resvisu,  add.obs = TRUE)
 ##'
-##'  ####### Second example with Rmixmod
-##' ### Package loading
+##'
+##' ## Second example: R package Rmixmod
+##' # Package loading
 ##' require(Rmixmod)
 ##'  
 ##' # Data loading (categorical data)
@@ -158,16 +183,47 @@ NULL
 ##' # but observed probabilities of classification are used for parameter estimation
 ##' resvisu <- clusvis(log(resmixmod@bestResult@proba),
 ##'                    resmixmod@bestResult@parameters@proportions)
-##  
 ##'
+##' # Inference of the parameters used for results visualization
+##' # (specific for Rmixmod results)
+##' # It is better because probabilities of classification are generated
+##' # by using the model parameters
+##' resvisu <- clusvisMixmod(resmixmod)
 ##'
-##'}
+##' # Component interpretation graph
+##' plotDensityClusVisu(resvisu)
+##'
+##' # Scatter-plot of the observation memberships
+##' plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##' 
+##' ## Third example: R package VarSelLCM
+##' # Package loading
+##' require(VarSelLCM)
+##'
+##' # Data loading (categorical data)
+##' data("heart")
+##' # Model-based clustering with 3 components
+##' res <- VarSelCluster(heart[,-13], 3)
+##'
+##' # Inference of the parameters used for results visualization
+##' # (specific for VarSelLCM results)
+##' # It is better because probabilities of classification are generated
+##' # by using the model parameters
+##' resvisu <- clusvisVarSelLCM(res)
+##'
+##' # Component interpretation graph
+##' plotDensityClusVisu(resvisu)
+##'
+##' # Scatter-plot of the observation memberships
+##' plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##' }
 clusvis <- function(logtik.estim,
                     prop=rep(1/ncol(logtik.estim), ncol(logtik.estim)),
                     logtik.obs=NULL,
                     maxit=10**3,
                     nbrandomInit=12,
                     nbcpu=1){
+  logtik.estim <- as.matrix(logtik.estim)
   if (Sys.info()["sysname"] == "Linux"){
     nbcpu <- min(nbcpu, detectCores())
   }else{
@@ -192,7 +248,7 @@ clusvis <- function(logtik.estim,
         allinit <- c(allinit, lapply(1:(nbrandomInit-1), function(i) runif(length(out$startvec), max = 25)) )
       allresults <- mclapply(allinit,
                              function(start)
-                               optim(par = out$startvec,
+                               optim(par = start,#out$startvec,
                                      fn = computeLikelihoodCPP,
                                      gr = computeGradientCPP,
                                      control = list(maxit=maxit, fnscale=-1),

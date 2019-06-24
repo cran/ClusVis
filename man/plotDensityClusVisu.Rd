@@ -4,8 +4,11 @@
 \alias{plotDensityClusVisu}
 \title{Function for visualizing the clustering results}
 \usage{
-plotDensityClusVisu(res, dim = c(1, 2), threshold = 0.95, add.obs = FALSE,
-  positionlegend = "topright", xlim = NULL, ylim = NULL)
+plotDensityClusVisu(res, dim = c(1, 2), threshold = 0.95,
+  add.obs = FALSE, positionlegend = "topright", xlim = NULL,
+  ylim = NULL, colset = c("darkorange1", "dodgerblue2", "black",
+  "chartreuse2", "darkorchid2", "gold2", "deeppink2", "deepskyblue1",
+  "firebrick2", "cyan1", "red", "yellow"))
 }
 \arguments{
 \item{res}{object return by function \link{clusvis} or \link{clusvis}}
@@ -21,29 +24,33 @@ plotDensityClusVisu(res, dim = c(1, 2), threshold = 0.95, add.obs = FALSE,
 \item{xlim}{numeric. It specifies the range of x-axis.}
 
 \item{ylim}{numeric. It specifies the range of y-axis.}
+
+\item{colset}{character. It specifies the colors of the observations per class.}
 }
 \description{
 Function for visualizing the clustering results
 }
 \examples{
 \dontrun{
-# Package loading
-require(Rmixmod)
+ # Package loading
+ require(Rmixmod)
 
-# Data loading (categorical data)
-data(birds)
+ # Data loading (categorical data)
+ data("congress")
+ # Model-based clustering with 4 components
+ set.seed(123)
+ res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
 
-# Model-based clustering with 3 components
-resmixmod <- mixmodCluster(birds, 3)
+ # Inference of the parameters used for results visualization
+ # (specific for Rmixmod results)
+ # It is better because probabilities of classification are generated
+ # by using the model parameters
+ resvisu <- clusvisMixmod(res)
 
-# Inference of the parameters used for results visualization
-# (specific for Rmixmod results)
-resvisu <- clusvisMixmod(resmixmod)
+ # Component interpretation graph
+ plotDensityClusVisu(resvisu)
 
-# Component interpretation graph
-plotDensityClusVisu(resvisu)
-
-# Scatter-plot of the observation memberships
-plotDensityClusVisu(resvisu,  add.obs = TRUE)
+ # Scatter-plot of the observation memberships
+ plotDensityClusVisu(resvisu,  add.obs = TRUE)
 }
 }

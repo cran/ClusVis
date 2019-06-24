@@ -23,20 +23,21 @@ After parameter inference, visualization is done with function \link{plotDensity
 \examples{
 \dontrun{
 
- ## First example: R package VarSelLCM
+ ## First example: R package Rmixmod
  # Package loading
- require(VarSelLCM)
+ require(Rmixmod)
 
  # Data loading (categorical data)
  data("congress")
- # Model-based clustering with 3 components
- res <- VarSelCluster(congress, 3)
+ # Model-based clustering with 4 components
+ set.seed(123)
+ res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
 
  # Inference of the parameters used for results visualization
  # (specific for Rmixmod results)
  # It is better because probabilities of classification are generated
  # by using the model parameters
- resvisu <- clusvisVarSelLCM(res)
+ resvisu <- clusvisMixmod(res)
 
  # Component interpretation graph
  plotDensityClusVisu(resvisu)
@@ -66,6 +67,27 @@ resvisu <- clusvis(log(resmixmod@bestResult@proba),
 # It is better because probabilities of classification are generated
 # by using the model parameters
 resvisu <- clusvisMixmod(resmixmod)
+
+# Component interpretation graph
+plotDensityClusVisu(resvisu)
+
+# Scatter-plot of the observation memberships
+plotDensityClusVisu(resvisu,  add.obs = TRUE)
+
+## Third example: R package VarSelLCM
+# Package loading
+require(VarSelLCM)
+
+# Data loading (categorical data)
+data("heart")
+# Model-based clustering with 3 components
+res <- VarSelCluster(heart[,-13], 3)
+
+# Inference of the parameters used for results visualization
+# (specific for VarSelLCM results)
+# It is better because probabilities of classification are generated
+# by using the model parameters
+resvisu <- clusvisVarSelLCM(res)
 
 # Component interpretation graph
 plotDensityClusVisu(resvisu)

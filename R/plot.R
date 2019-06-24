@@ -8,29 +8,32 @@
 ##' @param positionlegend  character. It specifies the legend location.
 ##' @param xlim  numeric. It specifies the range of x-axis.
 ##' @param ylim  numeric. It specifies the range of y-axis.
+##' @param colset  character. It specifies the colors of the observations per class.
 ##'
 ##'
 ##' @return NULL
 ##' @examples
 ##' \dontrun{
-##' # Package loading
-##' require(Rmixmod)
-##' 
-##' # Data loading (categorical data)
-##' data(birds)
+##'  # Package loading
+##'  require(Rmixmod)
 ##'
-##' # Model-based clustering with 3 components
-##' resmixmod <- mixmodCluster(birds, 3)
+##'  # Data loading (categorical data)
+##'  data("congress")
+##'  # Model-based clustering with 4 components
+##'  set.seed(123)
+##'  res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
 ##'
-##' # Inference of the parameters used for results visualization
-##' # (specific for Rmixmod results)
-##' resvisu <- clusvisMixmod(resmixmod)
+##'  # Inference of the parameters used for results visualization
+##'  # (specific for Rmixmod results)
+##'  # It is better because probabilities of classification are generated
+##'  # by using the model parameters
+##'  resvisu <- clusvisMixmod(res)
 ##'
-##' # Component interpretation graph
-##' plotDensityClusVisu(resvisu)
+##'  # Component interpretation graph
+##'  plotDensityClusVisu(resvisu)
 ##'
-##' # Scatter-plot of the observation memberships
-##' plotDensityClusVisu(resvisu,  add.obs = TRUE)
+##'  # Scatter-plot of the observation memberships
+##'  plotDensityClusVisu(resvisu,  add.obs = TRUE)
 ##' }
 ##' @export
 ##'
@@ -40,7 +43,8 @@ plotDensityClusVisu <- function(res,
                                 add.obs=FALSE,
                                 positionlegend="topright",
                                 xlim=NULL,
-                                ylim=NULL){
+                                ylim=NULL, 
+                                colset=c("darkorange1", "dodgerblue2", "black", "chartreuse2", "darkorchid2", "gold2", "deeppink2", "deepskyblue1", "firebrick2", "cyan1", "red", "yellow")){
   if (res$error){
    warning("The number of components must be at least 3 to use this function") 
   }else{
@@ -63,14 +67,13 @@ plotDensityClusVisu <- function(res,
               labcex = 0.8,
               xlab=paste0("Dim1 (", 100*round(res$inertia[dim[1]]/sum(res$inertia), 4), "%)"),
               ylab=paste0("Dim2 (", 100*round(res$inertia[dim[2]]/sum(res$inertia), 4), "%)"))
-      colset <- c("darkorange1", "dodgerblue2", "black", "chartreuse2", "darkorchid2", "gold2", "deeppink2", "deepskyblue1", "firebrick2", "cyan1")
       if (length(colset) < ncol(res$logtik.obs)) colset <- rep("black", ncol(res$logtik.obs))
       points(res$y[,dim[1]],
              res$y[,dim[2]],
              pch=20,
              cex=0.7,
              col=colset[apply(res$logtik.obs, 1, which.max)])
-      if (length(colset) >= ncol(res$logtik.obs)) legend(x = positionlegend, legend = paste0("Compo.", 1:ncol(res$logtik.obs)), col = colset[1:ncol(res$logtik.obs)], pch = 20)
+      if (!is.null(positionlegend)&(length(colset) >= ncol(res$logtik.obs))) legend(x = positionlegend, legend = paste0("Compo.", 1:ncol(res$logtik.obs)), col = colset[1:ncol(res$logtik.obs)], pch = 20)
       
       
     }else{
@@ -95,7 +98,7 @@ plotDensityClusVisu <- function(res,
             xlab=paste0("Dim1 (", 100*round(res$inertia[dim[1]]/sum(res$inertia), 4), "%)"),
             ylab=paste0("Dim2 (", 100*round(res$inertia[dim[2]]/sum(res$inertia), 4), "%)")
       )
-      legend(legend = c("0.95<Pr. Classif.", "0.8<Pr. Classif.<0.95", "Pr. Classif.<0.8", "outside the conf. level."), x = positionlegend, fill = c("gray80","gray60","gray30", "white"), cex=0.7)
+      if (!is.null(positionlegend)) legend(legend = c("0.95<Pr. Classif.", "0.8<Pr. Classif.<0.95", "Pr. Classif.<0.8", "outside the conf. level."), x = positionlegend, fill = c("gray80","gray60","gray30", "white"), cex=0.7)
       input <- list(x=xval, y=yval, z=t(tikmax))
       
       contour(input, add=TRUE, levels=c(0.95,0.8,0.001), drawlabels = F,

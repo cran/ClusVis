@@ -4,8 +4,9 @@
 \alias{clusvis}
 \title{This function estimates the parameters used for visualization}
 \usage{
-clusvis(logtik.estim, prop = rep(1/ncol(logtik.estim), ncol(logtik.estim)),
-  logtik.obs = NULL, maxit = 10^3, nbrandomInit = 12, nbcpu = 1)
+clusvis(logtik.estim, prop = rep(1/ncol(logtik.estim),
+  ncol(logtik.estim)), logtik.obs = NULL, maxit = 10^3,
+  nbrandomInit = 12, nbcpu = 1)
 }
 \arguments{
 \item{logtik.estim}{matrix. It contains the probabilities of classification used for parameter inference (should be sampled from the model parameter or computed from the observations).}
@@ -28,20 +29,22 @@ This function estimates the parameters used for visualization
 }
 \examples{
 \dontrun{
- ####### First example with VarSelLCM
+
+ ## First example: R package Rmixmod
  # Package loading
- require(VarSelLCM)
+ require(Rmixmod)
 
  # Data loading (categorical data)
  data("congress")
- # Model-based clustering with 3 components
- res <- VarSelCluster(congress, 3)
+ # Model-based clustering with 4 components
+ set.seed(123)
+ res <- mixmodCluster(congress[,-1], 4, strategy = mixmodStrategy(nbTryInInit = 500, nbTry=25))
 
  # Inference of the parameters used for results visualization
  # (specific for Rmixmod results)
  # It is better because probabilities of classification are generated
  # by using the model parameters
- resvisu <- clusvisVarSelLCM(res)
+ resvisu <- clusvisMixmod(res)
 
  # Component interpretation graph
  plotDensityClusVisu(resvisu)
@@ -49,8 +52,9 @@ This function estimates the parameters used for visualization
  # Scatter-plot of the observation memberships
  plotDensityClusVisu(resvisu,  add.obs = TRUE)
 
- ####### Second example with Rmixmod
-### Package loading
+
+## Second example: R package Rmixmod
+# Package loading
 require(Rmixmod)
  
 # Data loading (categorical data)
@@ -65,6 +69,37 @@ resmixmod <- mixmodCluster(birds, 3)
 resvisu <- clusvis(log(resmixmod@bestResult@proba),
                    resmixmod@bestResult@parameters@proportions)
 
+# Inference of the parameters used for results visualization
+# (specific for Rmixmod results)
+# It is better because probabilities of classification are generated
+# by using the model parameters
+resvisu <- clusvisMixmod(resmixmod)
 
+# Component interpretation graph
+plotDensityClusVisu(resvisu)
+
+# Scatter-plot of the observation memberships
+plotDensityClusVisu(resvisu,  add.obs = TRUE)
+
+## Third example: R package VarSelLCM
+# Package loading
+require(VarSelLCM)
+
+# Data loading (categorical data)
+data("heart")
+# Model-based clustering with 3 components
+res <- VarSelCluster(heart[,-13], 3)
+
+# Inference of the parameters used for results visualization
+# (specific for VarSelLCM results)
+# It is better because probabilities of classification are generated
+# by using the model parameters
+resvisu <- clusvisVarSelLCM(res)
+
+# Component interpretation graph
+plotDensityClusVisu(resvisu)
+
+# Scatter-plot of the observation memberships
+plotDensityClusVisu(resvisu,  add.obs = TRUE)
 }
 }
